@@ -1,5 +1,6 @@
 import tkinter
 from tkinter import font
+from game import Game
 
 
 class App():
@@ -12,16 +13,29 @@ class App():
 		self.text = tkinter.Text(self.root,width=100,font=courier)
 		self.text.grid(row=0,rowspan=9)
 
+		self.entry.focus_force()
+
 		self.root.bind('<Return>', self.press_enter)
 		self.root.bind('<KP_Enter>', self.press_enter)
+
+		self.game = Game(self.write)
+		self.root.after(10, self.game_update)
+
+	def write(self,output):
+		self.text.insert(tkinter.END,'\n' + output)
+
+	def game_update(self):
+		self.game.update()
+		self.root.after(10, self.game_update)
 
 	def run(self):
 		self.root.mainloop()
 
 	def press_enter(self, event):
-		print(event)
-		print('You pressed enter: [{}]'.format(self.entry.get()))
-		self.entry.delete(0,len(self.entry.get()))
+		command = self.entry.get()
+		print('You pressed enter: [{}]'.format(command))
+		self.entry.delete(0, tkinter.END)
+		self.game.enqueue_command(command)
 
 
 if __name__ == '__main__':
