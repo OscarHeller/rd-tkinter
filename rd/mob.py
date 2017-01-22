@@ -21,9 +21,10 @@ class Mob():
 		self.output('You attack {}!'.format(target.get_name()))
 
 	def execute_command(self, command):
+		command_key = command.split(' ')[0].lower()
 		sorted_commands = sorted(self.commands, key=lambda x: x.keyword)
 		for c in sorted_commands:
-			if c.keyword.startswith(command):
+			if c.keyword.startswith(command_key):
 				c.execute(game=self.game)
 				break
 		else:
@@ -39,3 +40,7 @@ class Mob():
 
 	def get_name(self):
 		return self.name
+
+	def do_round(self):
+		self.output('Your clumsy slash misses {}.'.format(self.fighting.get_name()))
+		self.fighting.output('{}\'s clumsy slash misses you.'.format(self.fighting.fighting.get_name()))

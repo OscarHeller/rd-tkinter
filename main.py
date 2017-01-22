@@ -10,7 +10,7 @@ class App():
 
 		self.entry = tkinter.Entry(self.root,width=100,font=courier)
 		self.entry.grid(row=9)
-		self.text = tkinter.Text(self.root,width=100,font=courier)
+		self.text = tkinter.Text(self.root,width=100,font=courier, state='disabled')
 		self.text.grid(row=0,rowspan=9)
 
 		self.entry.focus_force()
@@ -22,7 +22,10 @@ class App():
 		self.root.after(10, self.game_update)
 
 	def write(self,output):
+		self.text.configure(state='normal')
 		self.text.insert(tkinter.END,'\n' + output)
+		self.text.see(tkinter.END)
+		self.text.configure(state='disabled')
 
 	def game_update(self):
 		self.game.update()

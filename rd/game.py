@@ -30,23 +30,22 @@ class Game():
 
 	def update(self):
 		self.combat_counter += 1
-		if self.combat_counter > 200:
+		if self.combat_counter > 300:
 			self.combat_counter = 0
 			self.do_combat_round()
 
 		if len(self.queue) > 0:
 			command = self.queue.pop(0)
-			self.execute_command(command)
-
-	def execute_command(self, command):
-		self.player.execute_command(command)
-		# print('Executing [{}].'.format(command))
-		# self.write_callback(command)
+			self.player.execute_command(command)
 
 	def do_combat_round(self):
 		current_time = datetime.datetime.now()
 		elapsed_time = (current_time - self.previous_combat_round).total_seconds()
 
+		if self.player.fighting:
+			self.player.do_round()
+			self.enemy.do_round()
+			self.player.output('\n')
 		print('Combat round. {:.2f} sec elapsed.'.format(elapsed_time))
 
 		self.previous_combat_round = current_time
