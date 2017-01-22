@@ -1,6 +1,6 @@
 import tkinter
 from tkinter import font
-from game import Game
+from rd.game import Game
 
 
 class App():
