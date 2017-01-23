@@ -2,6 +2,7 @@ import datetime
 
 from rd.mob import Mob
 from rd.item import Item
+from rd.constants import HALF_ROUND
 
 
 class Game():
@@ -23,7 +24,9 @@ class Game():
 
 	def update(self):
 		self.combat_counter += 1
-		if self.combat_counter > 300:
+		if self.combat_counter == HALF_ROUND:
+			self.do_mid_combat_round()
+		elif self.combat_counter >= (2 * HALF_ROUND):
 			self.combat_counter = 0
 			self.do_combat_round()
 
@@ -33,6 +36,9 @@ class Game():
 
 		for mob in self.mobs:
 			mob.update()
+
+	def do_mid_combat_round(self):
+		print('Mid combat round.')
 
 	def do_combat_round(self):
 		current_time = datetime.datetime.now()

@@ -1,7 +1,15 @@
 import random
 
 
-class KillCommand():
+class Command():
+	def __init__(self):
+		self.keyword = None
+
+	def is_combat_command(self):
+		return self.is_combat_command if hasattr(self, 'is_combat_command') else False
+
+
+class KillCommand(Command):
 	def __init__(self):
 		self.keyword = 'kill'
 
@@ -16,14 +24,14 @@ class KillCommand():
 
 			user.output('You attack {}!'.format(victim.get_short()))
 			victim.output('{} attacks you!'.format(user.get_short()))
-			user.do_round()
+			# user.do_round()
 
-			if user.fighting == victim:
-				user.output('{} {}.'.format(victim.get_short(), victim.get_condition()))
+			# if user.fighting == victim:
+			# 	user.output('{} {}.'.format(victim.get_short(), victim.get_condition()))
 
 
 
-class FleeCommand():
+class FleeCommand(Command):
 	def __init__(self):
 		self.keyword = 'flee'
 
@@ -36,7 +44,7 @@ class FleeCommand():
 			user.end_combat()
 
 
-class LookCommand():
+class LookCommand(Command):
 	def __init__(self):
 		self.keyword = 'look'
 
@@ -48,49 +56,5 @@ class LookCommand():
 		for mob in [mob for mob in game.mobs if mob != user]:
 			user.output(mob.get_short() + ' is here.')
 
-
-class GetCommand():
-	def __init__(self):
-		self.keyword = 'get'
-
-	def execute(self, user=None, game=None):
-		candidates = [item for item in game.items if not user.has_item(item)]
-
-		try:
-			target = random.choice(candidates)
-			user.outfit.add_to_inventory(target)
-			user.output('You get {}.'.format(target.get_short()))
-		except IndexError:
-			user.output('There\'s nothing here.')
-
-
-class DropCommand():
-	def __init__(self):
-		self.keyword = 'drop'
-
-	def execute(self, user=None, game=None):
-		candidates = [item for item in user.outfit.inventory]
-
-		try:
-			target = random.choice(candidates)
-			user.outfit.remove_from_inventory(target)
-			user.output('You drop {}.'.format(target.get_short()))
-		except IndexError:
-			user.output('You aren\'t carrying anything.')
-
-
-class InventoryCommand():
-	def __init__(self):
-		self.keyword = 'inventory'
-
-	def execute(self, user=None, game=None):
-		user.output('You are carrying:')
-		if len(user.outfit.inventory) > 0:
-			for item in user.outfit.inventory:
-				user.output('  {}'.format(item.get_short()))
-		else:
-			user.output('  Nothing.')
-
 COMBAT_COMMANDS = [KillCommand(), FleeCommand()]
 INFO_COMMANDS = [LookCommand()]
-ITEM_COMMANDS = [GetCommand(), InventoryCommand(), DropCommand()]

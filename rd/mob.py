@@ -7,6 +7,7 @@ from rd.outfit import Outfit
 class Mob():
 	def __init__(self, config={}, game=None):
 		self.buffer = []
+		self.combat_buffer = []
 		self.name = config['name']
 		self.game = game
 		self.maxhp = 1500
@@ -14,7 +15,6 @@ class Mob():
 		self.maxmana = 200
 		self.mana = 100
 		self.fighting = None
-		self.outfit = Outfit()
 
 		self.attacks_per_round = config['attacks_per_round']
 		self.damage_noun = config['damage_noun']
@@ -31,15 +31,15 @@ class Mob():
 			target.fighting = self
 		self.fighting = target
 
-	def has_item(self, item):
-		return self.outfit.has_item(item)
-
 	def execute_command(self, command):
 		command_key = command.split(' ')[0].lower()
 		sorted_commands = sorted(self.commands, key=lambda x: x.keyword)
 		for c in sorted_commands:
 			if c.keyword.startswith(command_key):
-				c.execute(game=self.game,user=self)
+				if c.is_combat_command():
+					self.combat_buffer.append(c)
+				else:
+					c.execute(game=self.game,user=self)
 				break
 		else:
 			self.output('Huh?')
