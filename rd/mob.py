@@ -1,6 +1,7 @@
 import random
 
-from rd.commands import KillCommand, FleeCommand, LookCommand
+from rd.commands import COMBAT_COMMANDS, INFO_COMMANDS, ITEM_COMMANDS
+from rd.outfit import Outfit
 
 
 class Mob():
@@ -13,6 +14,7 @@ class Mob():
 		self.maxmana = 100
 		self.mana = 100
 		self.fighting = None
+		self.outfit = Outfit()
 
 		self.attacks_per_round = config['attacks_per_round']
 		self.damage_noun = config['damage_noun']
@@ -21,13 +23,16 @@ class Mob():
 		self.short = config['short'] if 'short' in config else None
 		self.keywords = config['keywords'] if 'keywords' in config else None
 
-		self.commands = [KillCommand(), FleeCommand(), LookCommand()]
+		self.commands = COMBAT_COMMANDS + INFO_COMMANDS + ITEM_COMMANDS
 		print('New Mob: ', self.name, self.maxhp, self.hp, self.maxmana, self.mana)
 
 	def start_combat(self, target):
 		if not target.fighting:
 			target.fighting = self
 		self.fighting = target
+
+	def has_item(self, item):
+		return self.outfit.has_item(item)
 
 	def execute_command(self, command):
 		command_key = command.split(' ')[0].lower()
