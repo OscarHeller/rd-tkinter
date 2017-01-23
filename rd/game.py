@@ -31,6 +31,8 @@ class Game():
 		self.mobs.append(self.player)
 		self.mobs.append(Mob(config=enemyConfig, game=self))
 
+		self.enqueue_command('look')
+
 	def enqueue_command(self, command):
 		self.queue.append(command)
 

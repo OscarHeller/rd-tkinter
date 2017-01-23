@@ -1,6 +1,6 @@
 import random
 
-from rd.commands import KillCommand, FleeCommand
+from rd.commands import KillCommand, FleeCommand, LookCommand
 
 
 class Mob():
@@ -18,7 +18,7 @@ class Mob():
 		self.damage_noun = config['damage_noun']
 		self.damage_dice = (int(config['damage_dice'].split('d')[0]), int(config['damage_dice'].split('d')[1]))
 
-		self.commands = [KillCommand(), FleeCommand()]
+		self.commands = [KillCommand(), FleeCommand(), LookCommand()]
 		print('New Mob: ', self.name, self.maxhp, self.hp, self.maxmana, self.mana)
 
 	def start_combat(self, target):
@@ -116,7 +116,7 @@ class Mob():
 			self.damage_noun,
 			damage_string[1],
 			damage_string[2]))
-		
+
 		self.fighting.damage(damage)
 
 	def damage(self, amount):

@@ -34,3 +34,17 @@ class FleeCommand():
 			user.fighting.output('{} has fled!'.format(user.get_name()))
 			user.output('You flee from combat!')
 			user.end_combat()
+
+
+class LookCommand():
+	def __init__(self):
+		self.keyword = 'look'
+
+	def execute(self, user=None, game=None):
+		render_text = 'Limbo\nYou stand in a formless void. White mist swirls around you. You cannot move.\n\n'
+		render_text += '[Exits: none]\n\n'
+
+		for mob in [mob for mob in game.mobs if mob != user]:
+			render_text += mob.get_name() + ' is here.\n'
+
+		user.output(render_text)
