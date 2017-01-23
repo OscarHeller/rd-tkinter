@@ -54,7 +54,7 @@ class Game():
 			'name': 'Player',
 			'attacks_per_round': 3,
 			'damage_noun': 'punch',
-			'damage_dice': '2d4'
+			'damage_dice': '4d6'
 		}
 
 		enemyConfig = {

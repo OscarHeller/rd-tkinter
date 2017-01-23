@@ -9,9 +9,9 @@ class Mob():
 		self.buffer = []
 		self.name = config['name']
 		self.game = game
-		self.maxhp = 150
-		self.hp = 150
-		self.maxmana = 100
+		self.maxhp = 1500
+		self.hp = 1500
+		self.maxmana = 200
 		self.mana = 100
 		self.fighting = None
 		self.outfit = Outfit()
