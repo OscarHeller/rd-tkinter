@@ -41,10 +41,9 @@ class LookCommand():
 		self.keyword = 'look'
 
 	def execute(self, user=None, game=None):
-		render_text = 'Limbo\nYou stand in a formless void. White mist swirls around you. You cannot move.\n\n'
-		render_text += '[Exits: none]\n\n'
+		user.output('Limbo')
+		user.output('You stand in a formless void. White mist swirls around you. You cannot move.\n')
+		user.output('[Exits: none]\n')
 
 		for mob in [mob for mob in game.mobs if mob != user]:
-			render_text += mob.get_name() + ' is here.\n'
-
-		user.output(render_text)
+			user.output(mob.get_short() + ' is here.')

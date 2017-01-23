@@ -18,6 +18,9 @@ class Mob():
 		self.damage_noun = config['damage_noun']
 		self.damage_dice = (int(config['damage_dice'].split('d')[0]), int(config['damage_dice'].split('d')[1]))
 
+		self.short = config['short'] if 'short' in config else None
+		self.keywords = config['keywords'] if 'keywords' in config else None
+
 		self.commands = [KillCommand(), FleeCommand(), LookCommand()]
 		print('New Mob: ', self.name, self.maxhp, self.hp, self.maxmana, self.mana)
 
@@ -49,7 +52,7 @@ class Mob():
 
 	def output(self, message):
 		if self.is_player():
-			self.buffer.append(message)
+			self.buffer.append(message.capitalize())
 
 	def update(self):
 		if self.is_player() and len(self.buffer) > 0:
@@ -57,6 +60,12 @@ class Mob():
 			render_buffer += '\n'
 			self.game.write_callback(render_buffer)
 			self.buffer = []
+
+	def get_short(self):
+		if self.is_player():
+			return self.get_name()
+		else:
+			return self.short
 
 	def get_name(self):
 		return self.name

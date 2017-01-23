@@ -21,9 +21,11 @@ class Game():
 
 		enemyConfig = {
 			'name': 'Fungusaur',
+			'short': 'a fungusaur',
 			'attacks_per_round': 3,
 			'damage_noun': 'slice',
-			'damage_dice': '4d6'
+			'damage_dice': '4d6',
+			'keywords': ['fungusaur', 'dinosaur']
 		}
 
 		self.player = Mob(config=playerConfig, game=self)
