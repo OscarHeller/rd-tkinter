@@ -2,16 +2,16 @@ import random
 
 
 class Command():
-	def __init__(self):
-		self.keyword = None
+	def __init__(self, keyword=None):
+		self.keyword = keyword
 
 	def is_combat_command(self):
-		return self.is_combat_command if hasattr(self, 'is_combat_command') else False
+		return self.combat_command if hasattr(self, 'combat_command') else False
 
 
 class KillCommand(Command):
 	def __init__(self):
-		self.keyword = 'kill'
+		super().__init__(keyword='kill')
 
 	def execute(self, user=None, game=None):
 		if user.fighting:
@@ -33,7 +33,7 @@ class KillCommand(Command):
 
 class FleeCommand(Command):
 	def __init__(self):
-		self.keyword = 'flee'
+		super().__init__(keyword='flee')
 
 	def execute(self, user=None, game=None):
 		if not user.fighting:
@@ -46,7 +46,7 @@ class FleeCommand(Command):
 
 class LookCommand(Command):
 	def __init__(self):
-		self.keyword = 'look'
+		super().__init__(keyword='look')
 
 	def execute(self, user=None, game=None):
 		user.output('Limbo')
@@ -56,5 +56,4 @@ class LookCommand(Command):
 		for mob in [mob for mob in game.mobs if mob != user]:
 			user.output(mob.get_short() + ' is here.')
 
-COMBAT_COMMANDS = [KillCommand(), FleeCommand()]
-INFO_COMMANDS = [LookCommand()]
+COMMANDS = [KillCommand(), FleeCommand(), LookCommand()]

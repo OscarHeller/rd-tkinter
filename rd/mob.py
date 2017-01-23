@@ -1,15 +1,15 @@
 import random
 
-from rd.commands import COMBAT_COMMANDS, INFO_COMMANDS, ITEM_COMMANDS
-from rd.outfit import Outfit
+from rd.commands import COMMANDS
 
 
 class Mob():
 	def __init__(self, config={}, game=None):
+		self.game = game
 		self.buffer = []
 		self.combat_buffer = []
+		
 		self.name = config['name']
-		self.game = game
 		self.maxhp = 1500
 		self.hp = 1500
 		self.maxmana = 200
@@ -23,8 +23,8 @@ class Mob():
 		self.short = config['short'] if 'short' in config else None
 		self.keywords = config['keywords'] if 'keywords' in config else None
 
-		self.commands = COMBAT_COMMANDS + INFO_COMMANDS + ITEM_COMMANDS
-		print('New Mob: ', self.name, self.maxhp, self.hp, self.maxmana, self.mana)
+		self.commands = COMMANDS
+		print('New Mob: ', self.name, self.maxhp, self.hp, self.maxmana, self.mana, self.commands)
 
 	def start_combat(self, target):
 		if not target.fighting:
@@ -59,7 +59,7 @@ class Mob():
 		if self.is_player():
 			self.buffer.append(message[:1].upper() + message[1:])
 
-	def update(self):
+	def update(self, combat=False, mid_combat=False):
 		if self.is_player() and len(self.buffer) > 0:
 			render_buffer = ('\n').join(self.buffer)
 			render_buffer += '\n'
@@ -96,16 +96,15 @@ class Mob():
 		else:
 			return 'should be dead (BUG)'
 
-
-	def do_round_cleanup(self):
-		if self.fighting:
-			self.output('{} {}.'.format(self.fighting.get_short(), self.fighting.get_condition()))
-
 	def do_round(self):
 		for i in range(self.attacks_per_round):
 			if not self.fighting:
 				break
 			self.do_hit()
+
+	def do_round_cleanup(self):
+		if self.fighting:
+			self.output('{} {}.'.format(self.fighting.get_short(), self.fighting.get_condition()))
 
 	def do_hit(self):
 		hit = random.randint(0,99) < 75
@@ -143,3 +142,9 @@ class Mob():
 		self.fighting.output('You have killed {}!'.format(self.get_short()))
 		self.end_combat()
 		self.hp = self.maxhp
+
+	def do_mid_round(self):
+		self.output('Mid round.')
+
+	def do_mid_round_cleanup(self):
+		self.output('Mid round cleanup.')

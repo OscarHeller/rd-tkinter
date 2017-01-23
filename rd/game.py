@@ -40,17 +40,21 @@ class Game():
 	def do_mid_combat_round(self):
 		print('Mid combat round.')
 
+		for mob in (mob for mob in self.mobs if mob.fighting):
+			mob.do_mid_round()
+
+		for mob in (mob for mob in self.mobs if mob.fighting):
+			mob.do_mid_round_cleanup()
+
 	def do_combat_round(self):
 		current_time = datetime.datetime.now()
 		elapsed_time = (current_time - self.previous_combat_round).total_seconds()
 		print('Combat round. {:.2f} sec elapsed.'.format(elapsed_time))
 
-		for mob in self.mobs:
-			if mob.fighting:
+		for mob in (mob for mob in self.mobs if mob.fighting):
 				mob.do_round()
 
-		for mob in self.mobs:
-			if mob.fighting:
+		for mob in (mob for mob in self.mobs if mob.fighting):
 				mob.do_round_cleanup()
 
 		self.previous_combat_round = current_time
