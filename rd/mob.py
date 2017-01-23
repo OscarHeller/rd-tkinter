@@ -4,15 +4,20 @@ from rd.commands import KillCommand, FleeCommand
 
 
 class Mob():
-	def __init__(self, config, game=None):
+	def __init__(self, config={}, game=None):
 		self.buffer = []
-		self.name = config.name
+		self.name = config['name']
 		self.game = game
 		self.maxhp = 1500
 		self.hp = 1500
 		self.maxmana = 100
 		self.mana = 100
 		self.fighting = None
+
+		self.attacks_per_round = config['attacks_per_round']
+		self.damage_noun = config['damage_noun']
+		self.damage_dice = config['damage_dice']
+
 		self.commands = [KillCommand(), FleeCommand()]
 		print('New Mob: ', self.name, self.maxhp, self.hp, self.maxmana, self.mana)
 

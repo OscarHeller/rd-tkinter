@@ -1,6 +1,5 @@
 import datetime
 
-from rd.object import Object
 from rd.mob import Mob
 
 
@@ -13,16 +12,24 @@ class Game():
 		self.combat_counter = 0
 		self.previous_combat_round = datetime.datetime.now()
 
-		playerConfig = Object()
-		playerConfig.name = 'Player'
+		playerConfig = {
+			'name': 'Player',
+			'attacks_per_round': 3,
+			'damage_noun': 'punch',
+			'damage_dice': '2d4'
+		}
 
-		enemyConfig = Object()
-		enemyConfig.name = 'Fungusaur'
+		enemyConfig = {
+			'name': 'Fungusaur',
+			'attacks_per_round': 3,
+			'damage_noun': 'slice',
+			'damage_dice': '4d6'
+		}
 
-		self.player = Mob(playerConfig, game=self)
+		self.player = Mob(config=playerConfig, game=self)
 
 		self.mobs.append(self.player)
-		self.mobs.append(Mob(enemyConfig, game=self))
+		self.mobs.append(Mob(config=enemyConfig, game=self))
 
 	def enqueue_command(self, command):
 		self.queue.append(command)
