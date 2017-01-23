@@ -36,7 +36,6 @@ class App():
 
 	def press_enter(self, event):
 		command = self.entry.get()
-		print('You pressed enter: [{}]'.format(command))
 		self.entry.delete(0, tkinter.END)
 		self.game.enqueue_command(command)
 

@@ -1,22 +1,26 @@
+import random
+
+
 class KillCommand():
 	def __init__(self):
 		self.keyword = 'kill'
 
-	def execute(self, game=None):
-		if game.player.fighting:
-			game.player.output('You are already fighting!')
+	def execute(self, user=None, game=None):
+		if user.fighting:
+			user.output('You are already fighting!')
 		else:
-			game.player.start_combat(game.enemy)
+			candidates = [mob for mob in game.mobs if mob != user]
+			user.start_combat(random.choice(candidates))
 
 
 class FleeCommand():
 	def __init__(self):
 		self.keyword = 'flee'
 
-	def execute(self, game=None):
-		if not game.player.fighting:
-			game.player.output('You aren\'t fighting anyone.')
+	def execute(self, user=None, game=None):
+		if not user.fighting:
+			user.output('You aren\'t fighting anyone.')
 		else:
-			game.enemy.output('{} has fled!'.format(game.player.get_name()))
-			game.player.output('You flee from combat!')
-			game.player.end_combat()
+			user.fighting.output('{} has fled!'.format(user.get_name()))
+			user.output('You flee from combat!')
+			user.end_combat()
