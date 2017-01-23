@@ -16,7 +16,7 @@ class Game():
 			'name': 'Player',
 			'attacks_per_round': 3,
 			'damage_noun': 'punch',
-			'damage_dice': '2d4'
+			'damage_dice': '10d4'
 		}
 
 		enemyConfig = {
@@ -55,5 +55,9 @@ class Game():
 		for mob in self.mobs:
 			if mob.fighting:
 				mob.do_round()
+
+		for mob in self.mobs:
+			if mob.fighting:
+				mob.do_round_cleanup()
 
 		self.previous_combat_round = current_time

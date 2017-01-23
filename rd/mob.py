@@ -8,8 +8,8 @@ class Mob():
 		self.buffer = []
 		self.name = config['name']
 		self.game = game
-		self.maxhp = 1500
-		self.hp = 1500
+		self.maxhp = 150
+		self.hp = 150
 		self.maxmana = 100
 		self.mana = 100
 		self.fighting = None
@@ -25,8 +25,6 @@ class Mob():
 		if not target.fighting:
 			target.fighting = self
 		self.fighting = target
-		self.output('You attack {}!'.format(target.get_name()))
-		target.output('{} attacks you!'.format(self.get_name()))
 
 	def execute_command(self, command):
 		command_key = command.split(' ')[0].lower()
@@ -66,8 +64,33 @@ class Mob():
 	def is_player(self):
 		return self == self.game.player
 
+	def get_condition(self):
+		percentage = (self.hp / float(self.maxhp)) * 100
+
+		if percentage >= 100:
+			return 'is in excellent condition'
+		elif percentage >= 80:
+			return 'has some small wounds and bruises'
+		elif percentage >= 60:
+			return 'has a few wounds'
+		elif percentage >= 40:
+			return 'has some big nasty wounds and scratches'
+		elif percentage >= 20:
+			return 'looks pretty hurt'
+		elif percentage > 0:
+			return 'is in awful condition'
+		else:
+			return 'should be dead (BUG)'
+
+
+	def do_round_cleanup(self):
+		if self.fighting:
+			self.output('{} {}.'.format(self.fighting.get_name(), self.fighting.get_condition()))
+
 	def do_round(self):
 		for i in range(self.attacks_per_round):
+			if not self.fighting:
+				break
 			self.do_hit()
 
 	def do_hit(self):
@@ -93,3 +116,16 @@ class Mob():
 			self.damage_noun,
 			damage_string[1],
 			damage_string[2]))
+		
+		self.fighting.damage(damage)
+
+	def damage(self, amount):
+		self.hp -= amount
+		if self.hp <= 0:
+			self.die()
+
+	def die(self):
+		self.output('You have been KILLED!')
+		self.fighting.output('You have killed {}!'.format(self.get_name()))
+		self.end_combat()
+		self.hp = self.maxhp

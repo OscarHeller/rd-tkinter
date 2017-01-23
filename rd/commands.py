@@ -10,7 +10,17 @@ class KillCommand():
 			user.output('You are already fighting!')
 		else:
 			candidates = [mob for mob in game.mobs if mob != user]
-			user.start_combat(random.choice(candidates))
+
+			victim = random.choice(candidates)
+			user.start_combat(victim)
+
+			user.output('You attack {}!'.format(victim.get_name()))
+			victim.output('{} attacks you!'.format(user.get_name()))
+			user.do_round()
+
+			if user.fighting == victim:
+				user.output('{} {}.'.format(victim.get_name(), victim.get_condition()))
+
 
 
 class FleeCommand():
