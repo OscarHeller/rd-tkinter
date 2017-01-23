@@ -16,7 +16,7 @@ class Mob():
 
 		self.attacks_per_round = config['attacks_per_round']
 		self.damage_noun = config['damage_noun']
-		self.damage_dice = config['damage_dice']
+		self.damage_dice = (int(config['damage_dice'].split('d')[0]), int(config['damage_dice'].split('d')[1]))
 
 		self.commands = [KillCommand(), FleeCommand()]
 		print('New Mob: ', self.name, self.maxhp, self.hp, self.maxmana, self.mana)
@@ -63,9 +63,33 @@ class Mob():
 	def get_name(self):
 		return self.name
 
-	def do_round(self):
-		self.output('Your clumsy slash misses {}.'.format(self.fighting.get_name()))
-		self.fighting.output('{}\'s clumsy slash misses you.'.format(self.fighting.fighting.get_name()))
-
 	def is_player(self):
 		return self == self.game.player
+
+	def do_round(self):
+		for i in range(self.attacks_per_round):
+			self.do_hit()
+
+	def do_hit(self):
+		hit = random.randint(0,99) < 75
+		damage = 0
+		if hit:
+			for i in range(self.damage_dice[0]):
+				damage += random.randint(1, self.damage_dice[1])
+		if damage > 0:
+			damage_string = ('competent', 'does {} damage to'.format(damage), ', leaving marks!')
+		else:
+			damage_string = ('clumsy', 'misses', '.')
+
+		self.output('Your {} {} {} {}{}'.format(
+			damage_string[0],
+			self.damage_noun,
+			damage_string[1],
+			self.fighting.get_name(),
+			damage_string[2]))
+		self.fighting.output('{}\'s {} {} {} you{}'.format(
+			self.get_name(),
+			damage_string[0],
+			self.damage_noun,
+			damage_string[1],
+			damage_string[2]))
