@@ -52,7 +52,7 @@ class Mob():
 
 	def output(self, message):
 		if self.is_player():
-			self.buffer.append(message.capitalize())
+			self.buffer.append(message[:1].upper() + message[1:])
 
 	def update(self):
 		if self.is_player() and len(self.buffer) > 0:
