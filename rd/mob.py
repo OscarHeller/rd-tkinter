@@ -94,7 +94,7 @@ class Mob():
 
 	def do_round_cleanup(self):
 		if self.fighting:
-			self.output('{} {}.'.format(self.fighting.get_name(), self.fighting.get_condition()))
+			self.output('{} {}.'.format(self.fighting.get_short(), self.fighting.get_condition()))
 
 	def do_round(self):
 		for i in range(self.attacks_per_round):
@@ -117,10 +117,10 @@ class Mob():
 			damage_string[0],
 			self.damage_noun,
 			damage_string[1],
-			self.fighting.get_name(),
+			self.fighting.get_short(),
 			damage_string[2]))
 		self.fighting.output('{}\'s {} {} {} you{}'.format(
-			self.get_name(),
+			self.get_short(),
 			damage_string[0],
 			self.damage_noun,
 			damage_string[1],
@@ -135,6 +135,6 @@ class Mob():
 
 	def die(self):
 		self.output('You have been KILLED!')
-		self.fighting.output('You have killed {}!'.format(self.get_name()))
+		self.fighting.output('You have killed {}!'.format(self.get_short()))
 		self.end_combat()
 		self.hp = self.maxhp
