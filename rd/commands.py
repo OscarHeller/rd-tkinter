@@ -2,11 +2,16 @@ import random
 
 
 class Command():
-	def __init__(self, keyword=None):
+	def __init__(self, keyword=None, combat_command=False, lag=0):
 		self.keyword = keyword
+		self.combat_command = combat_command
+		self.lag = lag
 
 	def is_combat_command(self):
 		return self.combat_command if hasattr(self, 'combat_command') else False
+
+	def get_lag(self):
+		return self.lag
 
 
 class KillCommand(Command):
@@ -56,4 +61,14 @@ class LookCommand(Command):
 		for mob in [mob for mob in game.mobs if mob != user]:
 			user.output(mob.get_short() + ' is here.')
 
+
+class TestCombatCommand(Command):
+	def __init__(self):
+		super().__init__(keyword='test', combat_command=True)
+
+	def execute(self, user=None, game=None):
+		user.output('You use the test command on {}.'.format(user.fighting.get_short()))
+		user.fighting.output('{} uses the test command on you.'.format(user.get_short()))
+
 COMMANDS = [KillCommand(), FleeCommand(), LookCommand()]
+TEST_COMMANDS = [TestCombatCommand()]

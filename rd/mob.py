@@ -1,6 +1,6 @@
 import random
 
-from rd.commands import COMMANDS
+from rd.commands import COMMANDS, TEST_COMMANDS
 
 
 class Mob():
@@ -8,6 +8,7 @@ class Mob():
 		self.game = game
 		self.buffer = []
 		self.combat_buffer = []
+		self.lag = 0
 		
 		self.name = config['name']
 		self.maxhp = 1500
@@ -23,7 +24,7 @@ class Mob():
 		self.short = config['short'] if 'short' in config else None
 		self.keywords = config['keywords'] if 'keywords' in config else None
 
-		self.commands = COMMANDS
+		self.commands = COMMANDS + TEST_COMMANDS
 		print('New Mob: ', self.name, self.maxhp, self.hp, self.maxmana, self.mana, self.commands)
 
 	def start_combat(self, target):
@@ -37,6 +38,9 @@ class Mob():
 		for c in sorted_commands:
 			if c.keyword.startswith(command_key):
 				if c.is_combat_command():
+					if not self.fighting:
+						self.output('You aren\'t fighting anybody.')
+						break
 					self.combat_buffer.append(c)
 				else:
 					c.execute(game=self.game,user=self)
@@ -144,7 +148,12 @@ class Mob():
 		self.hp = self.maxhp
 
 	def do_mid_round(self):
-		self.output('Mid round.')
+		if self.lag > 0:
+			self.lag -= 1
+		elif len(self.combat_buffer) > 0:
+			active_command = self.combat_buffer.pop(0)
+			active_command.execute(user=self, game=self.game)
+			self.lag += active_command.get_lag()
 
 	def do_mid_round_cleanup(self):
-		self.output('Mid round cleanup.')
+		pass
