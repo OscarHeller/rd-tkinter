@@ -42,6 +42,7 @@ class Mob():
 						self.output('You aren\'t fighting anybody.')
 						break
 					self.combat_buffer.append(c)
+					self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
 				else:
 					c.execute(game=self.game,user=self)
 				break
@@ -154,6 +155,7 @@ class Mob():
 			active_command = self.combat_buffer.pop(0)
 			active_command.execute(user=self, game=self.game)
 			self.lag += active_command.get_lag()
+			self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
 
 	def do_mid_round_cleanup(self):
 		pass

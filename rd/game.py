@@ -6,12 +6,13 @@ from rd.constants import HALF_ROUND
 
 
 class Game():
-	def __init__(self,write_callback):
+	def __init__(self, write_callback, write_to_commands_callback):
 		self.mobs = []
 		self.items = []
 
 		self.queue = []
 		self.write_callback = write_callback
+		self.write_to_commands_callback = write_to_commands_callback
 		self.combat_counter = 0
 		self.previous_combat_round = datetime.datetime.now()
 
