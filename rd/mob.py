@@ -17,6 +17,8 @@ class Mob():
 		self.mana = 100
 		self.fighting = None
 
+		self.game.write_to_stats_callback('{}/{}hp {}/{}m'.format(self.hp, self.maxhp, self.mana, self.maxmana))
+
 		self.attacks_per_round = config['attacks_per_round']
 		self.damage_noun = config['damage_noun']
 		self.damage_dice = (int(config['damage_dice'].split('d')[0]), int(config['damage_dice'].split('d')[1]))
@@ -138,7 +140,7 @@ class Mob():
 		self.fighting.damage(damage)
 
 	def damage(self, amount):
-		self.hp -= amount
+		self.set_hp(self.hp - amount)
 		if self.hp <= 0:
 			self.die()
 
@@ -146,7 +148,11 @@ class Mob():
 		self.output('You have been KILLED!')
 		self.fighting.output('You have killed {}!'.format(self.get_short()))
 		self.end_combat()
-		self.hp = self.maxhp
+		self.set_hp(self.maxhp)
+
+	def set_hp(self, amount):
+		self.hp = amount
+		self.write_stats()
 
 	def do_mid_round(self):
 		if self.lag > 0:
@@ -163,3 +169,7 @@ class Mob():
 	def clear_combat_buffer(self):
 		self.combat_buffer = []
 		self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
+
+	def write_stats(self):
+		if self.game.player == self:
+			self.game.write_to_stats_callback('{}/{}hp {}/{}m'.format(self.hp, self.maxhp, self.mana, self.maxmana))
