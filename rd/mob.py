@@ -159,3 +159,7 @@ class Mob():
 
 	def do_mid_round_cleanup(self):
 		pass
+
+	def clear_combat_buffer(self):
+		self.combat_buffer = []
+		self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])

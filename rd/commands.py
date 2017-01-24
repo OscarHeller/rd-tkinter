@@ -62,6 +62,15 @@ class LookCommand(Command):
 			user.output(mob.get_short() + ' is here.')
 
 
+class ClearCommand(Command):
+	def __init__(self):
+		super().__init__(keyword='clear')
+
+	def execute(self, user=None, game=None):
+		user.output('You clear your combat buffer.')
+		user.clear_combat_buffer()
+
+
 class TestCombatCommand(Command):
 	def __init__(self):
 		super().__init__(keyword='test', combat_command=True)
@@ -70,5 +79,5 @@ class TestCombatCommand(Command):
 		user.output('You use the test command on {}.'.format(user.fighting.get_short()))
 		user.fighting.output('{} uses the test command on you.'.format(user.get_short()))
 
-COMMANDS = [KillCommand(), FleeCommand(), LookCommand()]
+COMMANDS = [KillCommand(), FleeCommand(), LookCommand(), ClearCommand()]
 TEST_COMMANDS = [TestCombatCommand()]
