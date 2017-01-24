@@ -79,5 +79,14 @@ class TestCombatCommand(Command):
 		user.output('You use the test command on {}.'.format(user.fighting.get_short()))
 		user.fighting.output('{} uses the test command on you.'.format(user.get_short()))
 
+
+class TestCombatLagCommand(Command):
+	def __init__(self):
+		super().__init__(keyword='lag', combat_command=True, lag=1)
+
+	def execute(self, user=None, game=None):
+		user.output('You use the testLag command on {}.'.format(user.fighting.get_short()))
+		user.fighting.output('{} uses the testLag command on you.'.format(user.get_short()))
+
 COMMANDS = [KillCommand(), FleeCommand(), LookCommand(), ClearCommand()]
-TEST_COMMANDS = [TestCombatCommand()]
+TEST_COMMANDS = [TestCombatCommand(), TestCombatLagCommand()]
