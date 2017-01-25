@@ -1,14 +1,12 @@
 import datetime
 
 from rd.mob import Mob
-from rd.item import Item
 from rd.constants import HALF_ROUND
 
 
 class Game():
 	def __init__(self, write_callback, write_to_commands_callback, write_to_stats_callback):
 		self.mobs = []
-		self.items = []
 
 		self.queue = []
 		self.write_callback = write_callback
@@ -82,12 +80,3 @@ class Game():
 
 		self.mobs.append(self.player)
 		self.mobs.append(Mob(config=enemyConfig, game=self))
-
-		gigConfig = {
-			'short': 'a gigantic war axe',
-			'damage_noun': 'chop',
-			'damage_dice': '6d6',
-			'wear_location': 'wield'
-		}
-
-		self.items.append(Item(config=gigConfig, game=self))
