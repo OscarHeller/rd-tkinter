@@ -25,27 +25,25 @@ class App():
 		self.root.bind('<Return>', self.press_enter)
 		self.root.bind('<KP_Enter>', self.press_enter)
 
-		self.game = Game(self.write, self.write_to_commands, self.write_to_stats)
+		self.game = Game(self.write)
 		self.root.after(10, self.game_update)
 
-	def write_to_commands(self, commands):
-		self.commands.configure(state='normal')
-		self.commands.delete(1.0, tkinter.END)
-		for command in commands:
-			self.commands.insert(tkinter.END, '\n' + command)
-		self.commands.configure(state='disabled')
-
-	def write_to_stats(self, stats):
-		self.stats.configure(state='normal')
-		self.stats.delete(0, tkinter.END)
-		self.stats.insert(tkinter.END, stats)
-		self.stats.configure(state='disabled')
-
-	def write(self,output):
-		self.text.configure(state='normal')
-		self.text.insert(tkinter.END, '\n' + output)
-		self.text.see(tkinter.END)
-		self.text.configure(state='disabled')
+	def write(self, output, target='output'):
+		if target == 'output':
+			self.text.configure(state='normal')
+			self.text.insert(tkinter.END, '\n' + output)
+			self.text.see(tkinter.END)
+			self.text.configure(state='disabled')
+		elif target == 'stats':
+			self.stats.configure(state='normal')
+			self.stats.delete(0, tkinter.END)
+			self.stats.insert(tkinter.END, output)
+			self.stats.configure(state='disabled')
+		elif target == 'commands':
+			self.commands.configure(state='normal')
+			self.commands.delete(1.0, tkinter.END)
+			self.commands.insert(tkinter.END, output)
+			self.commands.configure(state='disabled')
 
 	def game_update(self):
 		self.game.update()

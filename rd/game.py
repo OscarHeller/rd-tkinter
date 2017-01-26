@@ -5,13 +5,11 @@ from rd.constants import HALF_ROUND
 
 
 class Game():
-	def __init__(self, write_callback, write_to_commands_callback, write_to_stats_callback):
+	def __init__(self, write_callback):
 		self.mobs = []
 
 		self.queue = []
 		self.write_callback = write_callback
-		self.write_to_commands_callback = write_to_commands_callback
-		self.write_to_stats_callback = write_to_stats_callback
 		self.combat_counter = 0
 		self.previous_combat_round = datetime.datetime.now()
 
@@ -77,6 +75,7 @@ class Game():
 		}
 
 		self.player = Mob(config=playerConfig, game=self)
+		self.player.write_stats()
 
 		self.mobs.append(self.player)
 		self.mobs.append(Mob(config=enemyConfig, game=self))

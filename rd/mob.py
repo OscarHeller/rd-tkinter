@@ -18,8 +18,6 @@ class Mob():
 		self.mana = 100
 		self.fighting = None
 
-		self.game.write_to_stats_callback('{}/{}hp {}/{}m'.format(self.hp, self.maxhp, self.mana, self.maxmana))
-
 		self.attacks_per_round = config['attacks_per_round']
 		self.damage_noun = config['damage_noun']
 		self.damage_dice = (int(config['damage_dice'].split('d')[0]), int(config['damage_dice'].split('d')[1]))
@@ -50,7 +48,7 @@ class Mob():
 						self.output('You aren\'t fighting anyone.')
 						return
 					self.combat_buffer.append(c)
-					self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
+					self.write_commands()
 				else:
 					try:
 						c.prepare()
@@ -203,15 +201,20 @@ class Mob():
 			active_command.super_execute()
 			active_command.execute()
 			self.lag += active_command.get_lag()
-			self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
+			self.write_commands()
 
 	def do_mid_round_cleanup(self):
 		pass
 
 	def clear_combat_buffer(self):
 		self.combat_buffer = []
-		self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
+		self.write_commands()
+
+	def write_commands(self):
+		commands = [c.keyword for c in self.combat_buffer]
+		render = '\n'.join(commands)
+		self.game.write_callback(render, target='commands')
 
 	def write_stats(self):
 		if self.game.player == self:
-			self.game.write_to_stats_callback('{}/{}hp {}/{}m'.format(self.hp, self.maxhp, self.mana, self.maxmana))
+			self.game.write_callback('{}/{}hp {}/{}m'.format(self.hp, self.maxhp, self.mana, self.maxmana), target='stats')
