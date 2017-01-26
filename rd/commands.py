@@ -2,10 +2,13 @@ import random
 
 
 class Command():
-	def __init__(self, keyword=None, combat_command=False, lag=0):
-		self.keyword = keyword
-		self.combat_command = combat_command
-		self.lag = lag
+	def __init__(self, config):
+		self.keyword = config['keyword'] if 'keyword' in config else None
+		self.mana = config['mana'] if 'mana' in config else 0
+
+	def init_user(self, user):
+		self.user = user
+		self.game = user.game
 
 	def is_combat_command(self):
 		return self.combat_command if hasattr(self, 'combat_command') else False
@@ -13,12 +16,25 @@ class Command():
 	def get_lag(self):
 		return self.lag
 
+	def execute(self):
+		if self.mana > 0 and self.mana > self.user.mana:
+			self.user.output('You don\'t have enough mana.')
+			return
+
 
 class KillCommand(Command):
 	def __init__(self):
-		super().__init__(keyword='kill')
+		config = {
+			'keyword' : 'kill'
+		}
+		super().__init__(config)
 
-	def execute(self, user=None, game=None):
+	def execute(self):
+		super().execute()
+
+		user = self.user
+		game = self.game
+
 		if user.fighting:
 			user.output('You are already fighting!')
 		else:
@@ -29,54 +45,49 @@ class KillCommand(Command):
 
 			user.output('You attack {}!'.format(victim.get_short()))
 			victim.output('{} attacks you!'.format(user.get_short()))
-			# user.do_round()
-
-			# if user.fighting == victim:
-			# 	user.output('{} {}.'.format(victim.get_short(), victim.get_condition()))
 
 
+# class FleeCommand(Command):
+# 	def __init__(self):
+# 		super().__init__(keyword='flee')
 
-class FleeCommand(Command):
-	def __init__(self):
-		super().__init__(keyword='flee')
-
-	def execute(self, user=None, game=None):
-		if not user.fighting:
-			user.output('You aren\'t fighting anyone.')
-		else:
-			user.fighting.output('{} has fled!'.format(user.get_short()))
-			user.output('You flee from combat!')
-			user.end_combat()
-
-
-class LookCommand(Command):
-	def __init__(self):
-		super().__init__(keyword='look')
-
-	def execute(self, user=None, game=None):
-		user.output('Limbo')
-		user.output('You stand in a formless void. White mist swirls around you. You cannot move.\n')
-		user.output('[Exits: none]\n')
-
-		for mob in [mob for mob in game.mobs if mob != user]:
-			user.output(mob.get_short() + ' is here.')
+# 	def execute(self, user=None, game=None):
+# 		if not user.fighting:
+# 			user.output('You aren\'t fighting anyone.')
+# 		else:
+# 			user.fighting.output('{} has fled!'.format(user.get_short()))
+# 			user.output('You flee from combat!')
+# 			user.end_combat()
 
 
-class ClearCommand(Command):
-	def __init__(self):
-		super().__init__(keyword='clear')
+# class LookCommand(Command):
+# 	def __init__(self):
+# 		super().__init__(keyword='look')
 
-	def execute(self, user=None, game=None):
-		user.output('You clear your combat buffer.')
-		user.clear_combat_buffer()
+# 	def execute(self, user=None, game=None):
+# 		user.output('Limbo')
+# 		user.output('You stand in a formless void. White mist swirls around you. You cannot move.\n')
+# 		user.output('[Exits: none]\n')
+
+# 		for mob in [mob for mob in game.mobs if mob != user]:
+# 			user.output(mob.get_short() + ' is here.')
 
 
-class PhantomForceCommand(Command):
-	def __init__(self):
-		super().__init__(keyword='phantom', combat_command=True)
+# class ClearCommand(Command):
+# 	def __init__(self):
+# 		super().__init__(keyword='clear')
 
-	def execute(self, user=None, game=None):
-		user.do_damage(damage=150, noun='phantom force', target=user.fighting)
+# 	def execute(self, user=None, game=None):
+# 		user.output('You clear your combat buffer.')
+# 		user.clear_combat_buffer()
 
-COMMANDS = [KillCommand(), FleeCommand(), LookCommand(), ClearCommand()]
-COMBAT_COMMANDS = [PhantomForceCommand()]
+
+# class PhantomForceCommand(Command):
+# 	def __init__(self):
+# 		super().__init__(keyword='phantom', combat_command=True, mana=75)
+
+# 	def execute(self, user=None, game=None):
+# 		user.do_damage(damage=150, noun='phantom force', target=user.fighting)
+
+COMMANDS = [KillCommand]
+COMBAT_COMMANDS = []

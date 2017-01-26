@@ -8,6 +8,7 @@ class Mob():
 		self.game = game
 		self.buffer = []
 		self.combat_buffer = []
+		self.commands = []
 		self.lag = 0
 		
 		self.name = config['name']
@@ -26,7 +27,13 @@ class Mob():
 		self.short = config['short'] if 'short' in config else None
 		self.keywords = config['keywords'] if 'keywords' in config else None
 
-		self.commands = COMMANDS + COMBAT_COMMANDS
+		self.initialize_commands(COMMANDS + COMBAT_COMMANDS)
+
+	def initialize_commands(self, commands):
+		for c in commands:
+			temp = c()
+			temp.init_user(self)
+			self.commands.append(temp)
 
 	def start_combat(self, target):
 		if not target.fighting:
@@ -45,7 +52,7 @@ class Mob():
 					self.combat_buffer.append(c)
 					self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
 				else:
-					c.execute(game=self.game,user=self)
+					c.execute()
 				break
 		else:
 			self.output('Huh?')
