@@ -2,6 +2,7 @@ import datetime
 
 from rd.mob import Mob
 from rd.constants import HALF_ROUND
+from rd.ai import FungusaurAI
 
 
 class Game():
@@ -71,7 +72,8 @@ class Game():
 			'attacks_per_round': 3,
 			'damage_noun': 'slice',
 			'damage_dice': '4d6',
-			'keywords': ['fungusaur', 'dinosaur']
+			'keywords': ['fungusaur', 'dinosaur'],
+			'AI': FungusaurAI
 		}
 
 		self.player = Mob(config=playerConfig, game=self)

@@ -21,6 +21,7 @@ class Mob():
 		self.attacks_per_round = config['attacks_per_round']
 		self.damage_noun = config['damage_noun']
 		self.damage_dice = (int(config['damage_dice'].split('d')[0]), int(config['damage_dice'].split('d')[1]))
+		self.AI = config['AI'](self) if 'AI' in config else None
 
 		self.short = config['short'] if 'short' in config else None
 		self.keywords = config['keywords'] if 'keywords' in config else None
@@ -40,6 +41,8 @@ class Mob():
 
 	def execute_command(self, command):
 		command_key = command.split(' ')[0].lower()
+		args = command.split(' ')[1:]
+
 		sorted_commands = sorted(self.commands, key=lambda x: x.keyword)
 		for c in sorted_commands:
 			if c.keyword.startswith(command_key):
@@ -55,7 +58,7 @@ class Mob():
 					except Exception as e:
 						self.output(str(e))
 						return
-					c.execute()
+					c.execute(args)
 				break
 		else:
 			self.output('Huh?')
@@ -191,7 +194,13 @@ class Mob():
 	def do_mid_round(self):
 		if self.lag > 0:
 			self.lag -= 1
-		elif len(self.combat_buffer) > 0:
+			return
+
+		# Check AI
+		if self.fighting is not None and not self.is_player() and self.AI is not None:
+			self.AI.decide()
+
+		if len(self.combat_buffer) > 0:
 			active_command = self.combat_buffer.pop(0)
 			try:
 				active_command.prepare()
@@ -199,7 +208,7 @@ class Mob():
 				self.output(str(e))
 				return
 			active_command.super_execute()
-			active_command.execute()
+			active_command.execute([])
 			self.lag += active_command.get_lag()
 			self.write_commands()
 

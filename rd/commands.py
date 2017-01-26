@@ -31,7 +31,7 @@ class KillCommand(Command):
 	def __init__(self):
 		super().__init__(keyword='kill')
 
-	def execute(self):
+	def execute(self, args):
 		user = self.user
 		game = self.game
 
@@ -56,7 +56,7 @@ class PhantomForceCommand(Command):
 		}
 		super().__init__(config=config)
 
-	def execute(self):
+	def execute(self, args):
 		self.user.do_damage(damage=150, noun='phantom force', target=self.user.fighting)
 
 
@@ -69,27 +69,27 @@ class EnergyDrainCommand(Command):
 		}
 		super().__init__(config=config)
 
-	def execute(self):
+	def execute(self, args):
 		self.user.do_damage(damage=25, noun='energy drain', target=self.user.fighting)
 
 
-class KickCommand(Command):
+class DunkCommand(Command):
 	def __init__(self):
 		config = {
-			'keyword' : 'kick',
+			'keyword' : 'dunk',
 			'combat_command' : True
 		}
 		super().__init__(config=config)
 
-	def execute(self):
-		self.user.do_damage(damage = 50, noun='kick', target=self.user.fighting)
+	def execute(self, args):
+		self.user.do_damage(damage = 50, noun='dunk', target=self.user.fighting)
 
 
 class FleeCommand(Command):
 	def __init__(self):
 		super().__init__(keyword='flee')
 
-	def execute(self):
+	def execute(self, args):
 		user = self.user
 		game = self.game
 
@@ -105,7 +105,7 @@ class LookCommand(Command):
 	def __init__(self):
 		super().__init__(keyword='look')
 
-	def execute(self):
+	def execute(self, args):
 		user = self.user
 		game = self.game
 
@@ -121,7 +121,7 @@ class ClearCommand(Command):
 	def __init__(self):
 		super().__init__(keyword='clear')
 
-	def execute(self):
+	def execute(self, args):
 		user = self.user
 
 		user.output('You clear your combat buffer.')
@@ -132,7 +132,7 @@ class RestoreCommand(Command):
 	def __init__(self):
 		super().__init__(keyword='restore')
 
-	def execute(self):
+	def execute(self, args):
 		user = self.user
 		game = self.game
 
@@ -141,5 +141,18 @@ class RestoreCommand(Command):
 			mob.restore()
 
 
-COMMANDS = [KillCommand, LookCommand, FleeCommand, ClearCommand, RestoreCommand]
-COMBAT_COMMANDS = [PhantomForceCommand, EnergyDrainCommand, KickCommand]
+class SayCommand(Command):
+	def __init__(self):
+		super().__init__(keyword='say')
+
+	def execute(self, args):
+		user = self.user
+		game = self.game
+		message = ' '.join(args)
+
+		user.output('You say \'{}\''.format(message))
+		for mob in [mob for mob in game.mobs if mob is not user]:
+			mob.output('{} says \'{}\''.format(user.get_short(), message))
+
+COMMANDS = [KillCommand, LookCommand, FleeCommand, ClearCommand, RestoreCommand, SayCommand]
+COMBAT_COMMANDS = [PhantomForceCommand, EnergyDrainCommand, DunkCommand]
