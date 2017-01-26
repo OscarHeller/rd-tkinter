@@ -173,10 +173,21 @@ class Mob():
 		self.write_stats()
 
 	def spend_mana(self, amount):
+		if self.mana < amount:
+			raise Exception('You don\'t have enough mana.')
 		self.set_mana(self.mana - amount)
+
+	def gain_mana(self, amount):
+		self.set_mana(min(self.maxmana, self.mana + amount))
 
 	def set_mana(self, amount):
 		self.mana = amount
+		self.write_stats()
+
+	def restore(self):
+		self.mana = self.maxmana
+		self.hp = self.maxhp
+		self.output('You have been restored.')
 		self.write_stats()
 
 	def do_mid_round(self):
@@ -189,6 +200,7 @@ class Mob():
 			except Exception as e:
 				self.output(str(e))
 				return
+			active_command.super_execute()
 			active_command.execute()
 			self.lag += active_command.get_lag()
 			self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
