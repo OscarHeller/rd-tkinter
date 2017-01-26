@@ -6,24 +6,44 @@ from rd.game import Game
 class App():
 	def __init__(self):
 		self.root = tkinter.Tk()
+		self.root.resizable(0, 0)
 		courier = font.Font(family='Courier New',size=13)
 
-		self.entry = tkinter.Entry(self.root,width=100,font=courier)
-		self.entry.grid(row=9)
-		self.text = tkinter.Text(self.root,width=100,font=courier, state='disabled')
-		self.text.grid(row=0,rowspan=9)
+		self.stats = tkinter.Entry(self.root, font=courier, state='disabled', width=100, relief=tkinter.FLAT, \
+			disabledforeground='black', justify='center')
+		self.stats.grid(row=0, column=0, columnspan=2)
+
+		self.text = tkinter.Text(self.root, width=70, font=courier, state='disabled')
+		self.text.grid(row=1, column=0)
+		self.commands = tkinter.Text(self.root, width=30, font=courier, state='disabled')
+		self.commands.grid(row=1, column=1)
+		self.entry = tkinter.Entry(self.root, width=100, font=courier)
+		self.entry.grid(row=2, column=0, columnspan=2)
 
 		self.entry.focus_force()
 
 		self.root.bind('<Return>', self.press_enter)
 		self.root.bind('<KP_Enter>', self.press_enter)
 
-		self.game = Game(self.write)
+		self.game = Game(self.write, self.write_to_commands, self.write_to_stats)
 		self.root.after(10, self.game_update)
+
+	def write_to_commands(self, commands):
+		self.commands.configure(state='normal')
+		self.commands.delete(1.0, tkinter.END)
+		for command in commands:
+			self.commands.insert(tkinter.END, '\n' + command)
+		self.commands.configure(state='disabled')
+
+	def write_to_stats(self, stats):
+		self.stats.configure(state='normal')
+		self.stats.delete(0, tkinter.END)
+		self.stats.insert(tkinter.END, stats)
+		self.stats.configure(state='disabled')
 
 	def write(self,output):
 		self.text.configure(state='normal')
-		self.text.insert(tkinter.END,'\n' + output)
+		self.text.insert(tkinter.END, '\n' + output)
 		self.text.see(tkinter.END)
 		self.text.configure(state='disabled')
 

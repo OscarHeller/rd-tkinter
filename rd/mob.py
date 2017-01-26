@@ -1,20 +1,24 @@
 import random
 
-from rd.commands import COMBAT_COMMANDS, INFO_COMMANDS, ITEM_COMMANDS
-from rd.outfit import Outfit
+from rd.commands import COMMANDS, COMBAT_COMMANDS
 
 
 class Mob():
 	def __init__(self, config={}, game=None):
-		self.buffer = []
-		self.name = config['name']
 		self.game = game
-		self.maxhp = 150
-		self.hp = 150
-		self.maxmana = 100
+		self.buffer = []
+		self.combat_buffer = []
+		self.commands = []
+		self.lag = 0
+		
+		self.name = config['name']
+		self.maxhp = 1500
+		self.hp = 1500
+		self.maxmana = 200
 		self.mana = 100
 		self.fighting = None
-		self.outfit = Outfit()
+
+		self.game.write_to_stats_callback('{}/{}hp {}/{}m'.format(self.hp, self.maxhp, self.mana, self.maxmana))
 
 		self.attacks_per_round = config['attacks_per_round']
 		self.damage_noun = config['damage_noun']
@@ -23,23 +27,37 @@ class Mob():
 		self.short = config['short'] if 'short' in config else None
 		self.keywords = config['keywords'] if 'keywords' in config else None
 
-		self.commands = COMBAT_COMMANDS + INFO_COMMANDS + ITEM_COMMANDS
-		print('New Mob: ', self.name, self.maxhp, self.hp, self.maxmana, self.mana)
+		self.initialize_commands(COMMANDS + COMBAT_COMMANDS)
+
+	def initialize_commands(self, commands):
+		for c in commands:
+			temp = c()
+			temp.init_user(self)
+			self.commands.append(temp)
 
 	def start_combat(self, target):
 		if not target.fighting:
 			target.fighting = self
 		self.fighting = target
 
-	def has_item(self, item):
-		return self.outfit.has_item(item)
-
 	def execute_command(self, command):
 		command_key = command.split(' ')[0].lower()
 		sorted_commands = sorted(self.commands, key=lambda x: x.keyword)
 		for c in sorted_commands:
 			if c.keyword.startswith(command_key):
-				c.execute(game=self.game,user=self)
+				if c.is_combat_command():
+					if c.combat_command and not self.fighting:
+						self.output('You aren\'t fighting anyone.')
+						return
+					self.combat_buffer.append(c)
+					self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
+				else:
+					try:
+						c.prepare()
+					except Exception as e:
+						self.output(str(e))
+						return
+					c.execute()
 				break
 		else:
 			self.output('Huh?')
@@ -62,6 +80,10 @@ class Mob():
 	def update(self):
 		if self.is_player() and len(self.buffer) > 0:
 			render_buffer = ('\n').join(self.buffer)
+			if self.fighting:
+				condition = '{} {}.'.format(self.fighting.get_short(), self.fighting.get_condition())
+				condition = condition[:1].upper() + condition[1:]
+				render_buffer += '\n' + condition
 			render_buffer += '\n'
 			self.game.write_callback(render_buffer)
 			self.buffer = []
@@ -96,23 +118,25 @@ class Mob():
 		else:
 			return 'should be dead (BUG)'
 
-
-	def do_round_cleanup(self):
-		if self.fighting:
-			self.output('{} {}.'.format(self.fighting.get_short(), self.fighting.get_condition()))
-
 	def do_round(self):
 		for i in range(self.attacks_per_round):
 			if not self.fighting:
 				break
-			self.do_hit()
+			self.do_weapon_hit()
 
-	def do_hit(self):
+	def do_round_cleanup(self):
+		pass
+
+	def do_weapon_hit(self):
 		hit = random.randint(0,99) < 75
 		damage = 0
 		if hit:
 			for i in range(self.damage_dice[0]):
 				damage += random.randint(1, self.damage_dice[1])
+
+		self.do_damage(damage=damage, noun=self.damage_noun, target=self.fighting)
+
+	def do_damage(self, damage=0, noun=None, target=None):
 		if damage > 0:
 			damage_string = ('competent', 'does {} damage to'.format(damage), ', leaving marks!')
 		else:
@@ -120,21 +144,21 @@ class Mob():
 
 		self.output('Your {} {} {} {}{}'.format(
 			damage_string[0],
-			self.damage_noun,
+			noun,
 			damage_string[1],
-			self.fighting.get_short(),
+			target.get_short(),
 			damage_string[2]))
-		self.fighting.output('{}\'s {} {} {} you{}'.format(
+		target.output('{}\'s {} {} {} you{}'.format(
 			self.get_short(),
 			damage_string[0],
-			self.damage_noun,
+			noun,
 			damage_string[1],
 			damage_string[2]))
 
-		self.fighting.damage(damage)
+		target.take_damage(damage=damage)
 
-	def damage(self, amount):
-		self.hp -= amount
+	def take_damage(self, damage=0):
+		self.set_hp(self.hp - damage)
 		if self.hp <= 0:
 			self.die()
 
@@ -142,4 +166,52 @@ class Mob():
 		self.output('You have been KILLED!')
 		self.fighting.output('You have killed {}!'.format(self.get_short()))
 		self.end_combat()
+		self.set_hp(self.maxhp)
+
+	def set_hp(self, amount):
+		self.hp = amount
+		self.write_stats()
+
+	def spend_mana(self, amount):
+		if self.mana < amount:
+			raise Exception('You don\'t have enough mana.')
+		self.set_mana(self.mana - amount)
+
+	def gain_mana(self, amount):
+		self.set_mana(min(self.maxmana, self.mana + amount))
+
+	def set_mana(self, amount):
+		self.mana = amount
+		self.write_stats()
+
+	def restore(self):
+		self.mana = self.maxmana
 		self.hp = self.maxhp
+		self.output('You have been restored.')
+		self.write_stats()
+
+	def do_mid_round(self):
+		if self.lag > 0:
+			self.lag -= 1
+		elif len(self.combat_buffer) > 0:
+			active_command = self.combat_buffer.pop(0)
+			try:
+				active_command.prepare()
+			except Exception as e:
+				self.output(str(e))
+				return
+			active_command.super_execute()
+			active_command.execute()
+			self.lag += active_command.get_lag()
+			self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
+
+	def do_mid_round_cleanup(self):
+		pass
+
+	def clear_combat_buffer(self):
+		self.combat_buffer = []
+		self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
+
+	def write_stats(self):
+		if self.game.player == self:
+			self.game.write_to_stats_callback('{}/{}hp {}/{}m'.format(self.hp, self.maxhp, self.mana, self.maxmana))
