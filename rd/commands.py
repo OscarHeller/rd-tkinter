@@ -5,6 +5,8 @@ class Command():
 	def __init__(self, config):
 		self.keyword = config['keyword'] if 'keyword' in config else None
 		self.mana = config['mana'] if 'mana' in config else 0
+		self.combat_command = config['combat_command'] if 'combat_command' in config else False
+		self.lag = config['lag'] if 'lag' in config else 0
 
 	def init_user(self, user):
 		self.user = user
@@ -16,10 +18,11 @@ class Command():
 	def get_lag(self):
 		return self.lag
 
-	def execute(self):
+	def prepare(self):
+		if self.combat_command and not self.user.fighting:
+			raise Exception('You aren\'t fighting anyone.')
 		if self.mana > 0 and self.mana > self.user.mana:
-			self.user.output('You don\'t have enough mana.')
-			return
+			raise Exception('You don\'t have enough mana.')
 
 
 class KillCommand(Command):
@@ -30,8 +33,6 @@ class KillCommand(Command):
 		super().__init__(config)
 
 	def execute(self):
-		super().execute()
-
 		user = self.user
 		game = self.game
 
@@ -45,6 +46,19 @@ class KillCommand(Command):
 
 			user.output('You attack {}!'.format(victim.get_short()))
 			victim.output('{} attacks you!'.format(user.get_short()))
+
+
+class PhantomForceCommand(Command):
+	def __init__(self):
+		config = {
+			'keyword' : 'phantom',
+			'combat_command' : True,
+			'mana' : 175
+		}
+		super().__init__(config)
+
+	def execute(self):
+		self.user.do_damage(damage=150, noun='phantom force', target=self.user.fighting)
 
 
 # class FleeCommand(Command):
@@ -81,13 +95,5 @@ class KillCommand(Command):
 # 		user.output('You clear your combat buffer.')
 # 		user.clear_combat_buffer()
 
-
-# class PhantomForceCommand(Command):
-# 	def __init__(self):
-# 		super().__init__(keyword='phantom', combat_command=True, mana=75)
-
-# 	def execute(self, user=None, game=None):
-# 		user.do_damage(damage=150, noun='phantom force', target=user.fighting)
-
 COMMANDS = [KillCommand]
-COMBAT_COMMANDS = []
+COMBAT_COMMANDS = [PhantomForceCommand]

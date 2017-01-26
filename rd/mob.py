@@ -45,10 +45,12 @@ class Mob():
 		sorted_commands = sorted(self.commands, key=lambda x: x.keyword)
 		for c in sorted_commands:
 			if c.keyword.startswith(command_key):
+				try:
+					c.prepare()
+				except Exception as e:
+					self.output(str(e))
+					return
 				if c.is_combat_command():
-					if not self.fighting:
-						self.output('You aren\'t fighting anybody.')
-						break
 					self.combat_buffer.append(c)
 					self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
 				else:
@@ -172,7 +174,12 @@ class Mob():
 			self.lag -= 1
 		elif len(self.combat_buffer) > 0:
 			active_command = self.combat_buffer.pop(0)
-			active_command.execute(user=self, game=self.game)
+			try:
+				active_command.prepare()
+			except Exception as e:
+				self.output(str(e))
+				return
+			active_command.execute()
 			self.lag += active_command.get_lag()
 			self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
 
