@@ -19,10 +19,10 @@ class Command():
 		return self.lag
 
 	def prepare(self):
-		if self.combat_command and not self.user.fighting:
-			raise Exception('You aren\'t fighting anyone.')
 		if self.mana > 0 and self.mana > self.user.mana:
 			raise Exception('You don\'t have enough mana.')
+		elif self.mana > 0:
+			self.user.spend_mana(self.mana)
 
 
 class KillCommand(Command):
@@ -53,7 +53,7 @@ class PhantomForceCommand(Command):
 		config = {
 			'keyword' : 'phantom',
 			'combat_command' : True,
-			'mana' : 175
+			'mana' : 25
 		}
 		super().__init__(config)
 

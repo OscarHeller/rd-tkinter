@@ -45,15 +45,18 @@ class Mob():
 		sorted_commands = sorted(self.commands, key=lambda x: x.keyword)
 		for c in sorted_commands:
 			if c.keyword.startswith(command_key):
-				try:
-					c.prepare()
-				except Exception as e:
-					self.output(str(e))
-					return
 				if c.is_combat_command():
+					if c.combat_command and not self.fighting:
+						self.output('You aren\'t fighting anyone.')
+						return
 					self.combat_buffer.append(c)
 					self.game.write_to_commands_callback([c.keyword for c in self.combat_buffer])
 				else:
+					try:
+						c.prepare()
+					except Exception as e:
+						self.output(str(e))
+						return
 					c.execute()
 				break
 		else:
@@ -167,6 +170,13 @@ class Mob():
 
 	def set_hp(self, amount):
 		self.hp = amount
+		self.write_stats()
+
+	def spend_mana(self, amount):
+		self.set_mana(self.mana - amount)
+
+	def set_mana(self, amount):
+		self.mana = amount
 		self.write_stats()
 
 	def do_mid_round(self):
