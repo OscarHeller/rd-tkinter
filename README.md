@@ -1,5 +1,13 @@
 # rd-tkinter
 
+> We join spokes together in a wheel, but it is the center hole that makes the wagon move. We shape clay into a pot, but it is the emptiness inside that holds whatever we want. We hammer wood for a hosue, but it is the inner space that makes it livable. We work with being, but non-being is what we use.
+
+###### Lao Tzu, 6th century B.C.
+
+> The glass is transparent, the wine transparent. The two are similar, the affair confused. There seems to be wine, and no glass, or glass, and no wine.
+
+###### Sahib ibn Abbad, c. 990
+
 ## Windows install
 
 ### OS-level dependencies
