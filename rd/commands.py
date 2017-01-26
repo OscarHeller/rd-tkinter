@@ -142,4 +142,4 @@ class RestoreCommand(Command):
 
 
 COMMANDS = [KillCommand, LookCommand, FleeCommand, ClearCommand, RestoreCommand]
-COMBAT_COMMANDS = [PhantomForceCommand, EnergyDrainCommand]
+COMBAT_COMMANDS = [PhantomForceCommand, EnergyDrainCommand, KickCommand]
