@@ -71,22 +71,12 @@ class ClearCommand(Command):
 		user.clear_combat_buffer()
 
 
-class TestCombatCommand(Command):
+class PhantomForceCommand(Command):
 	def __init__(self):
-		super().__init__(keyword='test', combat_command=True)
+		super().__init__(keyword='phantom', combat_command=True)
 
 	def execute(self, user=None, game=None):
-		user.output('You use the test command on {}.'.format(user.fighting.get_short()))
-		user.fighting.output('{} uses the test command on you.'.format(user.get_short()))
-
-
-class TestCombatLagCommand(Command):
-	def __init__(self):
-		super().__init__(keyword='lag', combat_command=True, lag=1)
-
-	def execute(self, user=None, game=None):
-		user.output('You use the testLag command on {}.'.format(user.fighting.get_short()))
-		user.fighting.output('{} uses the testLag command on you.'.format(user.get_short()))
+		user.do_damage(damage=150, noun='phantom force', target=user.fighting)
 
 COMMANDS = [KillCommand(), FleeCommand(), LookCommand(), ClearCommand()]
-TEST_COMMANDS = [TestCombatCommand(), TestCombatLagCommand()]
+COMBAT_COMMANDS = [PhantomForceCommand()]

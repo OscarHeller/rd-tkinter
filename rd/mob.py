@@ -1,6 +1,6 @@
 import random
 
-from rd.commands import COMMANDS, TEST_COMMANDS
+from rd.commands import COMMANDS, COMBAT_COMMANDS
 
 
 class Mob():
@@ -26,8 +26,7 @@ class Mob():
 		self.short = config['short'] if 'short' in config else None
 		self.keywords = config['keywords'] if 'keywords' in config else None
 
-		self.commands = COMMANDS + TEST_COMMANDS
-		print('New Mob: ', self.name, self.maxhp, self.hp, self.maxmana, self.mana, self.commands)
+		self.commands = COMMANDS + COMBAT_COMMANDS
 
 	def start_combat(self, target):
 		if not target.fighting:
@@ -66,9 +65,13 @@ class Mob():
 		if self.is_player():
 			self.buffer.append(message[:1].upper() + message[1:])
 
-	def update(self, combat=False, mid_combat=False):
+	def update(self):
 		if self.is_player() and len(self.buffer) > 0:
 			render_buffer = ('\n').join(self.buffer)
+			if self.fighting:
+				condition = '{} {}.'.format(self.fighting.get_short(), self.fighting.get_condition())
+				condition = condition[:1].upper() + condition[1:]
+				render_buffer += '\n' + condition
 			render_buffer += '\n'
 			self.game.write_callback(render_buffer)
 			self.buffer = []
@@ -107,18 +110,21 @@ class Mob():
 		for i in range(self.attacks_per_round):
 			if not self.fighting:
 				break
-			self.do_hit()
+			self.do_weapon_hit()
 
 	def do_round_cleanup(self):
-		if self.fighting:
-			self.output('{} {}.'.format(self.fighting.get_short(), self.fighting.get_condition()))
+		pass
 
-	def do_hit(self):
+	def do_weapon_hit(self):
 		hit = random.randint(0,99) < 75
 		damage = 0
 		if hit:
 			for i in range(self.damage_dice[0]):
 				damage += random.randint(1, self.damage_dice[1])
+
+		self.do_damage(damage=damage, noun=self.damage_noun, target=self.fighting)
+
+	def do_damage(self, damage=0, noun=None, target=None):
 		if damage > 0:
 			damage_string = ('competent', 'does {} damage to'.format(damage), ', leaving marks!')
 		else:
@@ -126,21 +132,21 @@ class Mob():
 
 		self.output('Your {} {} {} {}{}'.format(
 			damage_string[0],
-			self.damage_noun,
+			noun,
 			damage_string[1],
-			self.fighting.get_short(),
+			target.get_short(),
 			damage_string[2]))
-		self.fighting.output('{}\'s {} {} {} you{}'.format(
+		target.output('{}\'s {} {} {} you{}'.format(
 			self.get_short(),
 			damage_string[0],
-			self.damage_noun,
+			noun,
 			damage_string[1],
 			damage_string[2]))
 
-		self.fighting.damage(damage)
+		target.take_damage(damage=damage)
 
-	def damage(self, amount):
-		self.set_hp(self.hp - amount)
+	def take_damage(self, damage=0):
+		self.set_hp(self.hp - damage)
 		if self.hp <= 0:
 			self.die()
 
