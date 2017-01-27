@@ -11,6 +11,7 @@ class Mob():
 		self.commands = []
 		self.lag = 0
 		self.stale = []
+		self.affects = []
 		
 		self.name = config['name']
 		self.maxhp = 1500
@@ -206,6 +207,9 @@ class Mob():
 		self.write_stats()
 
 	def start_mid_round(self):
+		for affect in self.affects:
+			affect.update()
+			
 		if self.lag > 0:
 			return False
 

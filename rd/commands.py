@@ -1,4 +1,5 @@
 import random
+from rd.affects import DunkedAffect
 
 
 class Command():
@@ -100,6 +101,7 @@ class DunkCommand(Command):
 
 	def execute(self, args):
 		self.user.do_damage(self.get_damage(), noun='dunk', target=self.user.fighting)
+		DunkedAffect().initialize(target=self.user.fighting, caster=self.user)
 
 
 class FleeCommand(Command):

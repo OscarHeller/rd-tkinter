@@ -36,6 +36,10 @@ class Game():
 		for mob in self.mobs:
 			mob.update()
 
+	def broadcast(self, message, blacklist=[]):
+		for mob in [mob for mob in self.mobs if mob not in blacklist]:
+			mob.output(message)
+
 	def do_mid_combat_round(self):
 		print('Mid combat round.')
 
@@ -79,7 +83,7 @@ class Game():
 			'damage_noun': 'slice',
 			'damage_dice': '4d6',
 			'keywords': ['fungusaur', 'dinosaur'],
-			'AI': FungusaurAI
+			# 'AI': FungusaurAI
 		}
 
 		self.player = Mob(config=playerConfig, game=self)
