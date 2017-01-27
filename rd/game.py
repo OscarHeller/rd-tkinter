@@ -60,10 +60,7 @@ class Game():
 		print('Combat round. {:.2f} sec elapsed.'.format(elapsed_time))
 
 		for mob in (mob for mob in self.mobs if mob.fighting):
-				mob.do_round()
-
-		for mob in (mob for mob in self.mobs if mob.fighting):
-				mob.do_round_cleanup()
+			mob.do_round()
 
 		self.previous_combat_round = current_time
 

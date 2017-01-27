@@ -126,16 +126,29 @@ class Mob():
 				break
 			self.do_weapon_hit()
 
-	def do_round_cleanup(self):
-		pass
+	def do_parry(self):
+		self.output('You parry {}\'s attack.'.format(self.fighting.get_short()))
+		self.fighting.output('{} parries your attack.'.format(self.get_short()))
+
+	def do_dodge(self):
+		self.output('You dodge {}\'s attack.'.format(self.fighting.get_short()))
+		self.fighting.output('{} dodges your attack.'.format(self.get_short()))
 
 	def do_weapon_hit(self):
 		hit = random.randint(0,99) < 75
 		damage = 0
+
 		if hit:
+			parry = random.randint(0,99) < 10
+			dodge = random.randint(0,99) < 10
+			if parry:
+				self.fighting.do_parry()
+				return
+			if dodge:
+				self.fighting.do_dodge()
+				return
 			for i in range(self.damage_dice[0]):
 				damage += random.randint(1, self.damage_dice[1])
-
 		self.do_damage(damage=damage, noun=self.damage_noun, target=self.fighting)
 
 	def do_damage(self, damage=0, noun=None, target=None):
