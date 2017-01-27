@@ -1,6 +1,7 @@
 import random
 
 from rd.commands import COMMANDS, COMBAT_COMMANDS
+from rd.damage import get_damage_decorator
 
 
 class Mob():
@@ -153,23 +154,22 @@ class Mob():
 		self.do_damage(damage=damage, noun=self.damage_noun, target=self.fighting)
 
 	def do_damage(self, damage=0, noun=None, target=None):
-		if damage > 0:
-			damage_string = ('competent', 'does {} damage to'.format(damage), ', leaving marks!')
-		else:
-			damage_string = ('clumsy', 'misses', '.')
+		damage_string = get_damage_decorator(damage)
 
-		self.output('Your {} {} {} {}{}'.format(
-			damage_string[0],
+		self.output('Your {} {} {} {}{} ({})'.format(
+			damage_string[2],
 			noun,
 			damage_string[1],
 			target.get_short(),
-			damage_string[2]))
-		target.output('{}\'s {} {} {} you{}'.format(
+			damage_string[3],
+			damage))
+		target.output('{}\'s {} {} {} you{} ({})'.format(
 			self.get_short(),
-			damage_string[0],
+			damage_string[2],
 			noun,
 			damage_string[1],
-			damage_string[2]))
+			damage_string[3],
+			damage))
 
 		target.take_damage(damage=damage)
 
@@ -209,7 +209,7 @@ class Mob():
 	def start_mid_round(self):
 		for affect in self.affects:
 			affect.update()
-			
+
 		if self.lag > 0:
 			return False
 
