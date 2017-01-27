@@ -90,6 +90,47 @@ class EnergyDrainCommand(Command):
 		self.user.do_damage(self.get_damage(), noun='energy drain', target=self.user.fighting)
 
 
+class WieldCommand(Command):
+	def __init__(self):
+		super().__init__(keyword='wield')
+
+	def execute(self, args):
+		if len(args) == 0:
+			self.user.output('Your options are: none, sword, spear, axe, dagger')
+		elif args[0] == 'none':
+			self.user.damage_noun = 'punch'
+			self.user.damage_dice = [2, 6]
+			self.user.attacks_per_round = 2
+			self.user.output('You stop wielding a weapon.')
+			self.game.broadcast('{} stops wielding a weapon.'.format(self.user.get_short()), blacklist = self.user)
+		elif args[0] == 'sword':
+			self.user.damage_noun = 'slice'
+			self.user.damage_dice = [5, 8]
+			self.user.attacks_per_round = 3
+			self.user.output('You start wielding a sword.')
+			self.game.broadcast('{} starts wielding a sword.'.format(self.user.get_short()), blacklist = self.user)
+		elif args[0] == 'spear':
+			self.user.damage_noun = 'stab'
+			self.user.damage_dice = [7, 8]
+			self.user.attacks_per_round = 2
+			self.user.output('You start wielding a spear.')
+			self.game.broadcast('{} starts wielding a spear.'.format(self.user.get_short()), blacklist = self.user)
+		elif args[0] == 'axe':
+			self.user.damage_noun = 'chop'
+			self.user.damage_dice = [1, 46]
+			self.user.attacks_per_round = 3
+			self.user.output('You start wielding a axe.')
+			self.game.broadcast('{} starts wielding a axe.'.format(self.user.get_short()), blacklist = self.user)
+		elif args[0] == 'dagger':
+			self.user.damage_noun = 'shiv'
+			self.user.damage_dice = [5, 5]
+			self.user.attacks_per_round = 5
+			self.user.output('You start wielding a dagger.')
+			self.game.broadcast('{} starts wielding a dagger.'.format(self.user.get_short()), blacklist = self.user)
+		else:
+			self.user.output('Your options are: none, sword, spear, axe, dagger.')
+
+
 class DunkCommand(Command):
 	def __init__(self):
 		config = {
@@ -173,5 +214,5 @@ class SayCommand(Command):
 		for mob in [mob for mob in game.mobs if mob is not user]:
 			mob.output('{} says \'{}\''.format(user.get_short(), message))
 
-COMMANDS = [KillCommand, LookCommand, FleeCommand, ClearCommand, RestoreCommand, SayCommand]
+COMMANDS = [KillCommand, LookCommand, FleeCommand, ClearCommand, RestoreCommand, SayCommand, WieldCommand]
 COMBAT_COMMANDS = [PhantomForceCommand, EnergyDrainCommand, DunkCommand]

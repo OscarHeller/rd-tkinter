@@ -37,6 +37,8 @@ class Game():
 			mob.update()
 
 	def broadcast(self, message, blacklist=[]):
+		if type(blacklist) is not list:
+			blacklist = [blacklist]
 		for mob in [mob for mob in self.mobs if mob not in blacklist]:
 			mob.output(message)
 
@@ -69,9 +71,9 @@ class Game():
 	def init_demo(self):
 		playerConfig = {
 			'name': 'Player',
-			'attacks_per_round': 3,
+			'attacks_per_round': 2,
 			'damage_noun': 'punch',
-			'damage_dice': '4d6'
+			'damage_dice': [2, 6]
 		}
 
 		enemyConfig = {
@@ -79,7 +81,7 @@ class Game():
 			'short': 'a fungusaur',
 			'attacks_per_round': 3,
 			'damage_noun': 'slice',
-			'damage_dice': '4d6',
+			'damage_dice': [4, 6],
 			'keywords': ['fungusaur', 'dinosaur'],
 			# 'AI': FungusaurAI
 		}

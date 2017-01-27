@@ -23,7 +23,7 @@ class Mob():
 
 		self.attacks_per_round = config['attacks_per_round']
 		self.damage_noun = config['damage_noun']
-		self.damage_dice = (int(config['damage_dice'].split('d')[0]), int(config['damage_dice'].split('d')[1]))
+		self.damage_dice = config['damage_dice']
 		self.AI = config['AI'](self) if 'AI' in config else None
 
 		self.short = config['short'] if 'short' in config else None
