@@ -10,6 +10,7 @@ class Mob():
 		self.combat_buffer = []
 		self.commands = []
 		self.lag = 0
+		self.stale = []
 		
 		self.name = config['name']
 		self.maxhp = 1500
@@ -215,7 +216,11 @@ class Mob():
 				self.output(str(e))
 				return
 			active_command.super_execute()
-			active_command.execute([])
+			try:
+				self.stale.pop()
+			except Exception:
+				pass
+			self.stale.append(active_command)
 			self.lag += active_command.get_lag()
 			self.write_commands()		
 

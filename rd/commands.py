@@ -10,6 +10,9 @@ class Command():
 		self.combat_command = config['combat_command'] if 'combat_command' in config else False
 		self.lag = config['lag'] if 'lag' in config else 0
 		self.speed = config['speed'] if 'speed' in config else 10
+		self.base_damage = config['base_damage'] if 'base_damage' in config else 0
+
+		self.stale = False
 
 	def init_user(self, user):
 		self.user = user
@@ -26,6 +29,14 @@ class Command():
 
 	def super_execute(self):
 		self.user.gain_mana(self.mana_gain)
+
+		self.execute([])
+
+	def get_damage(self):
+		base_damage = self.base_damage
+		if self in self.user.stale:
+			base_damage *= 0.9
+		return base_damage
 
 
 class KillCommand(Command):
@@ -54,12 +65,13 @@ class PhantomForceCommand(Command):
 			'keyword' : 'phantom',
 			'combat_command' : True,
 			'mana_cost' : 50,
-			'speed' : 9
+			'speed' : 9,
+			'base_damage'  : 150
 		}
 		super().__init__(config=config)
 
 	def execute(self, args):
-		self.user.do_damage(damage=150, noun='phantom force', target=self.user.fighting)
+		self.user.do_damage(self.get_damage(), noun='phantom force', target=self.user.fighting)
 
 
 class EnergyDrainCommand(Command):
@@ -68,24 +80,26 @@ class EnergyDrainCommand(Command):
 			'keyword' : 'energydrain',
 			'combat_command' : True,
 			'mana_gain' : 25,
-			'speed' : 11
+			'speed' : 11,
+			'base_damage'  : 25
 		}
 		super().__init__(config=config)
 
 	def execute(self, args):
-		self.user.do_damage(damage=25, noun='energy drain', target=self.user.fighting)
+		self.user.do_damage(self.get_damage(), noun='energy drain', target=self.user.fighting)
 
 
 class DunkCommand(Command):
 	def __init__(self):
 		config = {
 			'keyword' : 'dunk',
-			'combat_command' : True
+			'combat_command' : True,
+			'base_damage'  : 50
 		}
 		super().__init__(config=config)
 
 	def execute(self, args):
-		self.user.do_damage(damage = 50, noun='dunk', target=self.user.fighting)
+		self.user.do_damage(self.get_damage(), noun='dunk', target=self.user.fighting)
 
 
 class FleeCommand(Command):
