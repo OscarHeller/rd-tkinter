@@ -39,11 +39,20 @@ class Game():
 	def do_mid_combat_round(self):
 		print('Mid combat round.')
 
-		for mob in (mob for mob in self.mobs if mob.fighting):
-			mob.do_mid_round()
+		command_mobs = []
 
 		for mob in (mob for mob in self.mobs if mob.fighting):
-			mob.do_mid_round_cleanup()
+			m = mob.start_mid_round()
+			if m is not None:
+				command_mobs.append([m, not mob.is_player(), mob])
+
+		sorted_command_mobs = sorted(command_mobs)
+
+		for mob in sorted_command_mobs:
+			mob[2].do_mid_round()
+
+		for mob in (mob for mob in self.mobs if mob.fighting):
+			mob.end_mid_round()
 
 	def do_combat_round(self):
 		current_time = datetime.datetime.now()

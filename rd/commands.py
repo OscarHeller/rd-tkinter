@@ -9,6 +9,7 @@ class Command():
 		self.mana_gain = config['mana_gain'] if 'mana_gain' in config else 0
 		self.combat_command = config['combat_command'] if 'combat_command' in config else False
 		self.lag = config['lag'] if 'lag' in config else 0
+		self.speed = config['speed'] if 'speed' in config else 10
 
 	def init_user(self, user):
 		self.user = user
@@ -52,7 +53,8 @@ class PhantomForceCommand(Command):
 		config = {
 			'keyword' : 'phantom',
 			'combat_command' : True,
-			'mana_cost' : 50
+			'mana_cost' : 50,
+			'speed' : 9
 		}
 		super().__init__(config=config)
 
@@ -65,7 +67,8 @@ class EnergyDrainCommand(Command):
 		config = {
 			'keyword' : 'energydrain',
 			'combat_command' : True,
-			'mana_gain' : 25
+			'mana_gain' : 25,
+			'speed' : 11
 		}
 		super().__init__(config=config)
 

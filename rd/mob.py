@@ -191,14 +191,21 @@ class Mob():
 		self.output('You have been restored.')
 		self.write_stats()
 
-	def do_mid_round(self):
+	def start_mid_round(self):
 		if self.lag > 0:
-			self.lag -= 1
-			return
+			return False
 
 		# Check AI
 		if self.fighting is not None and not self.is_player() and self.AI is not None:
 			self.AI.decide()
+
+		if len(self.combat_buffer) > 0:
+			return self.combat_buffer[0].speed
+		return False
+
+	def do_mid_round(self):
+		if self.lag > 0:
+			return
 
 		if len(self.combat_buffer) > 0:
 			active_command = self.combat_buffer.pop(0)
@@ -210,10 +217,11 @@ class Mob():
 			active_command.super_execute()
 			active_command.execute([])
 			self.lag += active_command.get_lag()
-			self.write_commands()
+			self.write_commands()		
 
-	def do_mid_round_cleanup(self):
-		pass
+	def end_mid_round(self):
+		if self.lag > 0:
+			self.lag -= 1
 
 	def clear_combat_buffer(self):
 		self.combat_buffer = []
