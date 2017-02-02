@@ -22,7 +22,7 @@
 
 ### One-time setup
 
-* Open a command prompt and navigate to the parent folder of your choice
+* Create an SSH key and add it to GitHub: https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
 * Pull the repository: `git clone git@github.com:OscarHeller/rd-tkinter.git`
 * Enter the project directory: `cd rd-tkinter`
 * Create a virtual environment: `virtualenv venv -p <absolute path to python3 install>`
@@ -32,4 +32,24 @@
 
 * Pull the latest version: `git pull`
 * Activate the virtual environment: `venv\Scripts\activate`
+* Run the project: `python main.py`
+
+## Ubuntu install
+
+### OS-level dependencies
+
+* Install git: `sudo apt install git`
+* Install python3-venv: `sudo apt-get install python3-venv`
+* Install tkinter: `sudo apt-get install python3-tk`
+
+### One-time setup
+* Create an SSH key and add it to GitHub: https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
+* Pull the repository: `git clone git@github.com:OscarHeller/rd-tkinter.git`
+* Enter the project directory: `cd rd-tkinter`
+* Create a virtual environment: `python3 -m venv venv`
+
+### Run
+
+* Pull the latest version: `git pull`
+* Activate the virtual environment: `source venv/bin/activate`
 * Run the project: `python main.py`
